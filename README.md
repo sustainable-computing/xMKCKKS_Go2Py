@@ -35,7 +35,12 @@ The C-style dll needs to be generated for different platforms, to generate your 
 
 This generates a dll named xmkckks.so from the export.go file. Please refer to the jupyter notebook tutorials.ipynb for details of how to import this dll in Python and perform HE operations. 
 
+## Acknowledgement
+MKHE-KKLSS: https://github.com/SNUCP/MKHE-KKLSS
 
+Python Wrapper for Lattigo: https://github.com/chandra-gummaluru/FL-Development/tree/MPHE
+
+xMKCKKS Python Implementation: https://github.com/MetisPrometheus/MSc-thesis-xmkckks
 
 ## Instructions for the Golang Code Base:
 Source: [MKHE-KKLSS](https://github.com/SNUCP/MKHE-KKLSS)
