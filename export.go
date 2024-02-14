@@ -137,7 +137,181 @@ var PN14QP439 = ckks.ParametersLiteral{
 	},
 	Scale: 1 << 52,
 	Sigma: rlwe.DefaultSigma,
+
+	// LogN:     15,
+	// LogSlots: 14,
+	// //60 + 13x54
+	// Q: []uint64{
+	// 	0xfffffffff6a0001,
+
+	// 	0x3fffffffd60001, 0x3fffffffca0001,
+	// 	0x3fffffff6d0001, 0x3fffffff5d0001,
+	// 	0x3fffffff550001, 0x3fffffff390001,
+	// 	0x3fffffff360001, 0x3fffffff2a0001,
+	// 	0x3fffffff000001, 0x3ffffffefa0001,
+	// 	0x3ffffffef40001, 0x3ffffffed70001,
+	// 	0x3ffffffed30001,
+	// },
+	// P: []uint64{
+	// 	//59 x 2
+	// 	0x7ffffffffe70001, 0x7ffffffffe10001,
+	// },
+	// Scale: 1 << 54,
+	// Sigma: rlwe.DefaultSigma,
 }
+
+// func Save(path string, object interface{}) error {
+// 	file, err := os.Create(path)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer file.Close()
+// 	return gob.NewEncoder(file).Encode(object)
+// }
+
+// func Load(path string, object interface{}) error {
+// 	file, err := os.Open(path)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer file.Close()
+// 	return gob.NewDecoder(file).Decode(object)
+// }
+
+func loadCompactParams() mkckks.Parameters {
+
+	PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
+	// server.paramsLiteral = *convParamsLiteral(PARAMSLITERAL)
+
+	ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
+	if ckksParams.PCount() < 2 {
+		fmt.Printf("ckks Params.PCount < 2")
+		// continue
+	}
+
+	if err != nil {
+		panic(err)
+	}
+
+	// PARAMS := mkckks.NewParameters(ckksParams)
+	params := mkckks.NewCompactParameters(ckksParams)
+
+	return params
+}
+
+// func loadParams() mkckks.Parameters {
+// 	// Serialized secure parameters exist on disk
+// 	if _, err := os.Stat(secure_params_path); errors.Is(err, os.ErrNotExist) {
+// 		fmt.Println("file not exist")
+// 		// Load the default ckks parameters
+// 		PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
+
+// 		ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
+
+// 		if ckksParams.PCount() < 2 {
+// 			fmt.Printf("ckks Params.PCount < 2")
+// 			// continue
+// 		}
+
+// 		if err != nil {
+// 			panic(err)
+// 		}
+
+// 		params := mkckks.NewParameters(ckksParams)
+// 		fmt.Println("params created")
+// 		fmt.Println(params)
+// 		params.CRS = nil
+// 		// fmt.Println(params.CRS)
+
+// 		// Serialize the secure parameters and save to disk
+// 		// json_params, err := json.Marshal(params)
+// 		// if err != nil {
+// 		// 	fmt.Printf("Error: %s", err)
+// 		// 	return params
+// 		// }
+// 		// fmt.Println(string(json_params))
+
+// 		//----
+
+// 		// var buf bytes.Buffer
+// 		// enc := gob.NewEncoder(&buf)
+// 		// err = enc.Encode(params)
+// 		// if err != nil {
+// 		// 	log.Fatal(err)
+// 		// }
+
+// 		// // Write to file
+// 		// err = os.WriteFile(secure_params_path, buf.Bytes(), 0600)
+// 		// if err != nil {
+// 		// 	log.Fatal(err)
+// 		// }
+
+// 		if err := Save(secure_params_path, params); err != nil {
+// 			panic(err)
+// 		}
+
+// 		// if err := Save("crs.json", params.CRS); err != nil {
+// 		// 	panic(err)
+// 		// }
+// 		return params
+
+// 	} else {
+// 		fmt.Println("file exists")
+// 		// Open the file and load the object back!
+// 		// file, err := os.Open(secure_params_path)
+
+// 		// data, err := os.ReadFile(secure_params_path)
+// 		// if err != nil {
+// 		// 	log.Fatal(err)
+// 		// }
+// 		// dec := json.NewDecoder(file)
+// 		// mkckks.Parameters params
+// 		// params := new(mkckks.Parameters)
+// 		var params mkckks.Parameters
+// 		params = *new(mkckks.Parameters)
+// 		params.Parameters = *new(mkrlwe.Parameters)
+// 		params.Parameters.Parameters = *new(rlwe.Parameters)
+
+// 		params.CRS = make(map[int]*mkrlwe.SwitchingKey)
+
+// 		// params.Parameters.Parameters.r ringQ = new(ring.Ring)
+
+// 		// dec := gob.NewDecoder(bytes.NewReader(data))
+
+// 		// for {
+// 		// 	err = dec.Decode(&params)
+// 		// 	if err == io.EOF {
+// 		// 		break
+// 		// 	}
+// 		// 	if err != nil {
+// 		// 		log.Fatal(err)
+// 		// 	}
+// 		// 	fmt.Println("decoding fine")
+// 		// }
+
+// 		if err := Load(secure_params_path, &params); err != nil {
+// 			panic(err)
+// 		}
+// 		PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
+
+// 		ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
+
+// 		if ckksParams.PCount() < 2 {
+// 			fmt.Printf("ckks Params.PCount < 2")
+// 			// continue
+// 		}
+
+// 		if err != nil {
+// 			panic(err)
+// 		}
+// 		params.Parameters.Parameters = ckksParams.Parameters
+// 		// if err := Load("crs.json", &params.CRS); err != nil {
+// 		// 	panic(err)
+// 		// }
+// 		return params
+// 	}
+
+// }
 
 //export newMPHEServer
 func newMPHEServer(user_idx C.int) *C.MPHEServer {
@@ -158,15 +332,18 @@ func newMPHEServer(user_idx C.int) *C.MPHEServer {
 
 	PARAMS := mkckks.NewParameters(ckksParams)
 
+	// loadParams()
+
 	// server.params = *convParams(&PARAMS)
 
 	kgen := mkckks.NewKeyGenerator(PARAMS)
+	// fmt.Println(kgen)
 
 	// gen sk, pk, rlk, rk
 	server.idx = user_idx // user_idx is C.int
 	// user_id := "user" + strconv.Itoa(int(server.idx))
 	user_id := strconv.Itoa(int(server.idx)) // C.int -> go int -> go string
-	// fmt.Printf(user_id)
+	fmt.Printf(user_id)
 
 	sk, pk := kgen.GenKeyPair(user_id)
 	server.sk = *convPolyQP(&sk.SecretKey.Value)
@@ -178,22 +355,23 @@ func newMPHEServer(user_idx C.int) *C.MPHEServer {
 //export encryptFromPk
 func encryptFromPk(pk *C.PolyQPPair, array *C.double, arraySize C.size_t, user_idx C.int) *C.Ciphertext {
 	// func encryptFromPk(paramsLiteral *C.ParametersLiteral, pk *C.PolyQPPair, array *C.complexdouble, arraySize C.size_t, user_idx C.int) *C.Message {
-	PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
-	// server.paramsLiteral = *convParamsLiteral(PARAMSLITERAL)
+	// PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
+	// // server.paramsLiteral = *convParamsLiteral(PARAMSLITERAL)
 
-	ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
+	// ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
 
-	// ckksParams, err := ckks.NewParametersFromLiteral(*paramsLiteral)
-	if ckksParams.PCount() < 2 {
-		fmt.Printf("ckks Params.PCount < 2")
-		// continue
-	}
+	// // ckksParams, err := ckks.NewParametersFromLiteral(*paramsLiteral)
+	// if ckksParams.PCount() < 2 {
+	// 	fmt.Printf("ckks Params.PCount < 2")
+	// 	// continue
+	// }
 
-	if err != nil {
-		panic(err)
-	}
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	PARAMS := mkckks.NewParameters(ckksParams)
+	// PARAMS := mkckks.NewParameters(ckksParams)
+	PARAMS := loadCompactParams()
 
 	publicKey := mkrlwe.NewPublicKey(PARAMS.Parameters, strconv.Itoa(int(user_idx)))
 
@@ -223,16 +401,17 @@ func partialDecrypt(sk *C.PolyQP, ciphertext *C.Ciphertext, user_idx C.int) *C.C
 	// requires using ringQAddLvl() to aggregate ct.Value["0"] and other participants' ct.Value[id],
 	// then call decodeAfterPartialDecrypt() once the decrypted ciphertext is obtained
 
-	PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
-	ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
-	if ckksParams.PCount() < 2 {
-		fmt.Printf("ckks Params.PCount < 2")
-		// continue
-	}
-	if err != nil {
-		panic(err)
-	}
-	PARAMS := mkckks.NewParameters(ckksParams)
+	// PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
+	// ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
+	// if ckksParams.PCount() < 2 {
+	// 	fmt.Printf("ckks Params.PCount < 2")
+	// 	// continue
+	// }
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// PARAMS := mkckks.NewParameters(ckksParams)
+	PARAMS := loadCompactParams()
 
 	secretKey := mkrlwe.NewSecretKey(PARAMS.Parameters, strconv.Itoa(int(user_idx)))
 
@@ -252,16 +431,17 @@ func partialDecrypt(sk *C.PolyQP, ciphertext *C.Ciphertext, user_idx C.int) *C.C
 func ringQAddLvl(op1 *C.Ciphertext, op1_id C.int, op2 *C.Ciphertext, op2_id C.int) *C.Ciphertext {
 	// Add op1.Value[op1_id] and op2.Value[op2_id], write results in a copy of op1.Value[op1_id]
 
-	PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
-	ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
-	if ckksParams.PCount() < 2 {
-		fmt.Printf("ckks Params.PCount < 2")
-		// continue
-	}
-	if err != nil {
-		panic(err)
-	}
-	PARAMS := mkckks.NewParameters(ckksParams)
+	// PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
+	// ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
+	// if ckksParams.PCount() < 2 {
+	// 	fmt.Printf("ckks Params.PCount < 2")
+	// 	// continue
+	// }
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// PARAMS := mkckks.NewParameters(ckksParams)
+	PARAMS := loadCompactParams()
 
 	ct1 := convMKCKKSCiphertext(op1)
 	ct2 := convMKCKKSCiphertext(op2)
@@ -291,22 +471,23 @@ func ringQAddLvl(op1 *C.Ciphertext, op1_id C.int, op2 *C.Ciphertext, op2_id C.in
 
 //export addRingPs
 func addRingPs(ringP1 *C.Poly, ringP2 *C.Poly) *C.Poly {
-	PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
-	// server.paramsLiteral = *convParamsLiteral(PARAMSLITERAL)
+	// PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
+	// // server.paramsLiteral = *convParamsLiteral(PARAMSLITERAL)
 
-	ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
+	// ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
 
-	// ckksParams, err := ckks.NewParametersFromLiteral(*paramsLiteral)
-	if ckksParams.PCount() < 2 {
-		fmt.Printf("ckks Params.PCount < 2")
-		// continue
-	}
+	// // ckksParams, err := ckks.NewParametersFromLiteral(*paramsLiteral)
+	// if ckksParams.PCount() < 2 {
+	// 	fmt.Printf("ckks Params.PCount < 2")
+	// 	// continue
+	// }
 
-	if err != nil {
-		panic(err)
-	}
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	PARAMS := mkckks.NewParameters(ckksParams)
+	// PARAMS := mkckks.NewParameters(ckksParams)
+	PARAMS := loadCompactParams()
 
 	rP1 := convRingPoly(ringP1)
 	rP2 := convRingPoly(ringP2)
@@ -325,16 +506,17 @@ func addRingPs(ringP1 *C.Poly, ringP2 *C.Poly) *C.Poly {
 func decodeAfterPartialDecrypt(ciphertext *C.Ciphertext) *C.Ldouble {
 	// Perform post processing after obtaining the decrypted ciphertext and perform decoding, return double plaintext
 
-	PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
-	ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
-	if ckksParams.PCount() < 2 {
-		fmt.Printf("ckks Params.PCount < 2")
-		// continue
-	}
-	if err != nil {
-		panic(err)
-	}
-	PARAMS := mkckks.NewParameters(ckksParams)
+	// PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
+	// ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
+	// if ckksParams.PCount() < 2 {
+	// 	fmt.Printf("ckks Params.PCount < 2")
+	// 	// continue
+	// }
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// PARAMS := mkckks.NewParameters(ckksParams)
+	PARAMS := loadCompactParams()
 
 	decryptor := mkckks.NewDecryptor(PARAMS)
 
@@ -375,16 +557,17 @@ func decodeAfterPartialDecrypt(ciphertext *C.Ciphertext) *C.Ldouble {
 //export addCTs
 func addCTs(op1 *C.Ciphertext, op2 *C.Ciphertext) *C.Ciphertext {
 	// homomorphic addition on op1 and op2, results are returned in a new ciphertext
-	PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
-	ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
-	if ckksParams.PCount() < 2 {
-		fmt.Printf("ckks Params.PCount < 2")
-		// continue
-	}
-	if err != nil {
-		panic(err)
-	}
-	PARAMS := mkckks.NewParameters(ckksParams)
+	// PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
+	// ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
+	// if ckksParams.PCount() < 2 {
+	// 	fmt.Printf("ckks Params.PCount < 2")
+	// 	// continue
+	// }
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// PARAMS := mkckks.NewParameters(ckksParams)
+	PARAMS := loadCompactParams()
 
 	ct1 := convMKCKKSCiphertext(op1)
 	ct2 := convMKCKKSCiphertext(op2)
@@ -398,16 +581,17 @@ func addCTs(op1 *C.Ciphertext, op2 *C.Ciphertext) *C.Ciphertext {
 //export multiplyCTConst
 func multiplyCTConst(op1 *C.Ciphertext, op2 C.double) *C.Ciphertext {
 	// homomorphic multiplication on op1 (ciphertext) and op2 (constant in double), results are updated in op1
-	PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
-	ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
-	if ckksParams.PCount() < 2 {
-		fmt.Printf("ckks Params.PCount < 2")
-		// continue
-	}
-	if err != nil {
-		panic(err)
-	}
-	PARAMS := mkckks.NewParameters(ckksParams)
+	// PARAMSLITERAL := &[]ckks.ParametersLiteral{PN14QP439}[0] // hardcoded, assuming using one parameters lietral
+	// ckksParams, err := ckks.NewParametersFromLiteral(*PARAMSLITERAL)
+	// if ckksParams.PCount() < 2 {
+	// 	fmt.Printf("ckks Params.PCount < 2")
+	// 	// continue
+	// }
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// PARAMS := mkckks.NewParameters(ckksParams)
+	PARAMS := loadCompactParams()
 
 	ct := convMKCKKSCiphertext(op1)
 	constant := float64(op2)
@@ -418,8 +602,6 @@ func multiplyCTConst(op1 *C.Ciphertext, op2 C.double) *C.Ciphertext {
 	// evaluator.Rescale(ct, PARAMS.Scale(), ct)
 	return convCiphertext(ct)
 }
-
-func main() {}
 
 /* HELPER: Conversion between C and Go structs */
 // *ckks.ParametersLiteral --> *C.ParametersLiteral
@@ -873,4 +1055,31 @@ func convSSRingPoly(shares *C.Share, sharesSize C.size_t) [][]*ring.Poly {
 	// NOTE: in theory, one share per ciphertext
 
 	return ssring
+}
+
+func main() {
+	// start := time.Now()
+
+	// loadCompactParams()
+
+	// elapsed := time.Since(start)
+	// fmt.Printf("elapsed time: %s", elapsed)
+	// // fmt.Println(params)
+	// // fmt.Println(params.CRS)
+	// params := loadCompactParams()
+	// // fmt.Println(cmp.Equal(bparams, params)) // will result in true
+	// // fmt.Println(bparams.Parameters.Parameters.RingP().Modulus)
+	// // fmt.Println(params.Parameters.Parameters.RingP().Modulus)
+
+	// fmt.Println(bparams.Parameters.Parameters)
+	// fmt.Println(params.Parameters.Parameters)
+
+	// // fmt.Println(params.Parameters.CRS[0].Value[0].Q)
+
+	// // fmt.Println(cmp.Equal(bparams.Parameters.CRS[0].Value[0].Q, params.Parameters.CRS[0].Value[0].Q)) // will result in true
+	// // fmt.Println(cmp.Equal(bparams.Parameters.Parameters.Gamma(), params.Parameters.Parameters)) // will result in true
+
+	// // .CRS[0].Value[0].Q
+	// newMPHEServer(1)
+
 }
