@@ -112,6 +112,7 @@ import (
 	"mk-lattigo/mkckks"
 	"mk-lattigo/mkrlwe"
 	"strconv"
+	"time"
 	"unsafe"
 
 	"github.com/ldsec/lattigo/v2/ckks"
@@ -121,22 +122,37 @@ import (
 )
 
 var PN14QP439 = ckks.ParametersLiteral{
-	LogN:     14,
-	LogSlots: 13,
-	Q: []uint64{
-		// 59 + 5x52
-		0x7ffffffffe70001,
-
-		0xffffffff00001, 0xfffffffe40001,
-		0xfffffffe20001, 0xfffffffbe0001,
-		0xfffffffa60001,
-	},
-	P: []uint64{
-		// 60 x 2
-		0xffffffffffc0001, 0xfffffffff840001,
-	},
-	Scale: 1 << 52,
+	LogN:     16,
+	LogSlots: 15,
+	Q: []uint64{0x80000000080001, 0x2000000a0001, 0x2000000e0001, 0x1fffffc20001, // 55 + 33 x 45
+		0x200000440001, 0x200000500001, 0x200000620001, 0x1fffff980001,
+		0x2000006a0001, 0x1fffff7e0001, 0x200000860001, 0x200000a60001,
+		0x200000aa0001, 0x200000b20001, 0x200000c80001, 0x1fffff360001,
+		0x200000e20001, 0x1fffff060001, 0x200000fe0001, 0x1ffffede0001,
+		0x1ffffeca0001, 0x1ffffeb40001, 0x200001520001, 0x1ffffe760001,
+		0x2000019a0001, 0x1ffffe640001, 0x200001a00001, 0x1ffffe520001,
+		0x200001e80001, 0x1ffffe0c0001, 0x1ffffdee0001, 0x200002480001,
+		0x1ffffdb60001, 0x200002560001},
+	P:     []uint64{0x80000000440001, 0x7fffffffba0001, 0x80000000500001, 0x7fffffffaa0001}, // 4 x 55
+	Scale: 1 << 45,
 	Sigma: rlwe.DefaultSigma,
+
+	// LogN:     14,
+	// LogSlots: 13,
+	// Q: []uint64{
+	// 	// 59 + 5x52
+	// 	0x7ffffffffe70001,
+
+	// 	0xffffffff00001, 0xfffffffe40001,
+	// 	0xfffffffe20001, 0xfffffffbe0001,
+	// 	0xfffffffa60001,
+	// },
+	// P: []uint64{
+	// 	// 60 x 2
+	// 	0xffffffffffc0001, 0xfffffffff840001,
+	// },
+	// Scale: 1 << 52,
+	// Sigma: rlwe.DefaultSigma,
 
 	// LogN:     15,
 	// LogSlots: 14,
@@ -371,7 +387,11 @@ func encryptFromPk(pk *C.PolyQPPair, array *C.double, arraySize C.size_t, user_i
 	// }
 
 	// PARAMS := mkckks.NewParameters(ckksParams)
+	start := time.Now()
+
 	PARAMS := loadCompactParams()
+	elapsed := time.Since(start)
+	fmt.Printf("elapsed time: %s \n", elapsed)
 
 	publicKey := mkrlwe.NewPublicKey(PARAMS.Parameters, strconv.Itoa(int(user_idx)))
 
